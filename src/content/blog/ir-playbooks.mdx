@@ -1,0 +1,326 @@
+---
+title: IR Playbooks
+description: Learn the basics of creating and using IR playbooks.
+pubDate: 09 20 2024
+image: /tryhackme/ir/ir-index.png
+categories:
+  - tryhackme
+tags:
+  - Blue Team
+---
+
+import Collapse from "../../components/blog/collapse.astro";
+import Diff from "../../components/blog/diff.astro";
+import Error from "../../components/blog/error.astro";
+import Info from "../../components/blog/info.astro";
+import Kbd from "../../components/blog/kbd.astro";
+import Success from "../../components/blog/success.astro";
+import Warning from "../../components/blog/warning.astro";
+import TimeLine from "../../components/page/TimeLine.astro";
+import LinkCard from "../../components/page/LinkCard.astro";
+
+
+## Introduction
+
+Knowing what actions to take in case a specific alert is triggered can often become confusing when dealing with alerts in a SOC. Incident Response (IR) playbooks help reduce some of the confusion arising from such scenarios. But what are IR playbooks, and how do you create them? Let's learn in this room.
+
+### Objectives
+
+In this room, we will be able to answer the following questions:
+
+- What are IR playbooks, and how are they used?
+- How do we capture the different steps of the IR process in a playbook?
+- What roles and responsibilities are assigned to the different members of the SOC in a playbook?
+
+### Prerequisites
+
+Before starting this room, please ensure that you have completed the following:
+
+- [Intro to IR and IM room](https://tryhackme.com/r/room/introtoirandim)
+- [Incident Response Module](https://tryhackme.com/module/incident-response)
+- [Advanced ELK Queries room](https://tryhackme.com/r/room/advancedelkqueries)
+
+## The Incident Response Documentation Universe
+
+As organizations mature, they document the scenarios and steps that personnel should take in their daily work. In a mature SOC, processes govern the response to alerts, defining roles and responsibilities for monitoring incidents.
+
+### The Incident Response Process
+
+The Incident Response (IR) process is crucial for incident management. While this process varies across organizations, key components typically include:
+
+- A RACI matrix defining roles and responsibilities.
+- An escalation matrix for communication to management.
+- A severity matrix for classifying incidents.
+- Procedures for handling cybersecurity crises.
+
+This process ensures that organizations are prepared to respond to incidents without ambiguity, although crises may necessitate deviations from established procedures.
+
+### The Need for Playbooks
+
+Despite having an IR process, playbooks are essential for providing detailed, granular steps for different types of incidents. The IR process outlines high-level steps but lacks specifics. Playbooks clarify what actions to take during each phase of an incident, preventing conflicts about response actions.
+![Incident response process](/tryhackme/ir/ir-tree.png)
+Each incident type—such as phishing, malware, account compromise, and ransomware—should have a dedicated playbook.
+
+### Use Cases and Playbooks
+
+In a SOC, use cases are developed to flag suspicious activity from terabytes of logs. Each use case requires a corresponding playbook, although multiple use cases may trigger a single playbook. This creates a one-to-many mapping.
+![playbook phishing](/tryhackme/ir/phising_playbook.png)
+### Automating Playbooks
+
+Playbooks contain repeatable steps that can often be automated. Using a SOAR platform, SOC teams can automate parts of playbooks, easing the workload on analysts. The degree of automation varies by organization, but well-defined playbooks pave the way for automation and reduce alert fatigue.
+
+Creating playbooks and use cases simplifies analysts' tasks, ensuring consistent SOC output and minimizing ambiguity. This structured approach also reveals opportunities for automating repetitive tasks.
+
+In the upcoming tasks, we will explore how to effectively follow and create playbooks as needed.
+
+## IR Process and Playbooks: Preparation
+
+Playbooks are designed to align with the Incident Response (IR) process, starting with the preparation phase. While many organizations do not include preparation in their playbooks—since it occurs before an incident is detected—it is crucial for playbook development.
+
+### Preparation
+
+Preparation ensures that the capability to detect, investigate, and respond to incidents is established. Although this phase is often overlooked in playbooks, it is typically mentioned in the prerequisites section.
+
+### Prerequisites of Playbooks
+
+Before creating a playbook, several prerequisites must be met to ensure effective incident response. Key points to verify include:
+
+- All relevant logs must be present and integrated into the SIEM.
+- Logs should be properly parsed, with required fields extracted and searchable.
+- Logs need to contain essential fields (e.g., machine information, IP information).
+- Use cases must be established to flag specific behaviors.
+- Recommended security controls should align with the organization’s policies.
+
+### Example Prerequisites for Specific Playbooks
+
+#### Phishing Playbook Prerequisites
+
+- **Relevant Logs:** Email gateway logs.
+- **Required Fields:** 
+  - Email recipient
+  - Email sender
+  - Subject
+  - URLs
+  - Attachment names and hashes
+  - QR codes
+- **Possible Use Cases:** 
+  - Known malicious file hashes in attachments
+  - Suspicious file extensions
+  - Suspicious sender domains
+  - Credential harvesting URLs
+- **Recommended Security Controls:** 
+  - Block email
+  - Quarantine suspicious attachments
+  - Delete email from inbox
+
+### Malware Playbook Prerequisites
+
+- **Relevant Logs:** EDR logs, Sysmon logs, Syslog, Windows event logs, network communication logs.
+- **Required Fields:** 
+  - Process names
+  - Parent process names
+  - Process ID
+  - File/process hashes
+  - Command line parameters
+- **Possible Use Cases:** 
+  - Suspicious parent-child relationships
+  - Suspicious file access
+  - Suspicious registry events
+- **Recommended Security Controls:** 
+  - Malware quarantine in EDR
+  - Shellcode blocking
+  - Exploit prevention
+
+These prerequisites may vary based on organizational requirements but typically follow a similar structure, including additional security policies as necessary.
+
+- What stage of the IR process can be translated into prerequisites for the playbooks?
+<Collapse title="View Answer.">
+  <Success>preparation</Success>
+</Collapse>
+
+## IR Process and Playbooks: Detection and Analysis
+
+Once an incident is triggered, the detection and analysis phase of the Incident Response (IR) process begins. Playbooks provide detailed steps to verify incidents during this phase.
+
+### Workflow Diagrams
+
+Playbooks often include workflow diagrams to clarify the process. These diagrams serve as a foundation for further detailing the steps in each playbook.
+![Workflow Diagrams](/tryhackme/ir/diagram.png)
+### Detection and Analysis Checklist
+
+Key points to consider during detection and analysis include:
+
+- Alert trigger
+- Initial verification of log data
+- Verification of potential Indicators of Compromise (IOCs) using OSINT and threat intelligence
+- Analysis of IOC metadata (e.g., parent process, command line instructions)
+- Depending on findings, either close the incident or escalate it for further action.
+
+### Example from Phishing Playbook
+
+#### Detection
+
+The phishing playbook can be triggered by alerts from the SIEM or user-reported emails. Common triggers include:
+
+- Emails from newly created domains
+- Emails with known malicious links
+- Emails with suspicious attachment types
+- Emails from domains with bad reputations
+
+### Analysis
+
+Upon triggering the playbook, the analyst will:
+
+1. Identify sender and recipient(s).
+2. Build context from the email subject and body.
+3. Determine the sender's IP address and domain.
+4. Extract URLs and attachments, checking any QR codes.
+5. Consult threat intelligence sources for reputation checks.
+6. Verify extracted items against platforms like VirusTotal for malicious flags.
+7. Check for signs of credential phishing.
+8. Investigate suspicious logins from email recipients.
+
+If identified as phishing, escalate; otherwise, close the incident.
+
+### Example from Malware Playbook
+
+### Detection
+
+The malware playbook can be triggered by alerts such as:
+
+- EDR marking a process as malicious
+- Suspicious files executing from temporary directories
+- Scripts running from browsers
+
+### Analysis
+
+The analyst will follow these steps:
+
+1. Identify the process that triggered the alert.
+2. Check the process's hash on threat intelligence platforms.
+3. Verify if the process is clean or malicious, noting not to upload binaries without management approval.
+4. Analyze any executed files linked to the process.
+5. Investigate the parent process of the triggering process.
+6. Examine network logs for suspicious downloads or phishing emails.
+7. If phishing is involved, trigger the phishing playbook.
+8. Execute the malware in a secure sandbox to study its behavior.
+9. Document malware activities for future reference.
+10. Preserve evidence of malicious activity.
+11. Conduct forensic analysis to identify further IOCs.
+12. Perform organization-wide threat hunting for affected systems.
+
+Based on these findings, the analyst will either close the incident if it's a False Positive or escalate if it’s a True Positive.
+
+- What steps should we follow if the incident is a False Positive?
+<Collapse title="View Answer.">
+  <Success>close incident</Success>
+</Collapse>
+
+### IR Process and Playbooks: Containment, Eradication, and Recovery
+
+After analyzing an incident, the analyst decides whether to close it as a False Positive or escalate it as a True Positive needing action. If it’s a True Positive, further steps for containment, eradication, and recovery are initiated.
+
+### Escalation Process
+
+Typically, an L1 analyst handles initial identification and analysis. If the incident is a False Positive, it is closed. If it’s a True Positive, it gets escalated to an L2 analyst, who will work on containment, eradication, and recovery, often with help from an L3 analyst for advanced analysis. The L3 analyst also manages and updates playbooks as needed.
+
+### Checklist for Containment, Eradication, and Recovery
+
+These steps are followed only when an incident is confirmed as a True Positive:
+
+1. Identify the root cause of the incident.
+2. Assess the impact and affected assets.
+3. Contain the threat by isolating affected assets.
+4. Remove the threat's impact from affected assets.
+5. Restore assets to the last known good configuration.
+6. Resume normal services for all affected assets.
+
+### Example From Phishing Playbook
+
+### Containment
+
+Once a phishing email is confirmed as a True Positive, the following actions should be taken:
+
+- Extract artifacts from the phishing email (e.g., IP addresses, file hashes).
+- Block the sender’s email, domain, and IP on the email gateway.
+- Block file hashes on the EDR.
+- Prevent access to phishing links via the web proxy.
+
+### Eradication
+
+If users interacted with the phishing email, additional steps include:
+
+- Remove phishing emails from all affected users' inboxes.
+- Isolate machines of users who clicked on links or downloaded attachments.
+- Revoke active sessions and reset credentials as needed.
+
+### Recovery
+
+To restore normal operations:
+
+- Reset credentials for affected accounts and ensure MFA is enabled.
+- Audit user account activities and revert any malicious actions.
+- Reimage machines affected by malicious attachments.
+
+### Example From Malware Playbook
+
+### Containment
+
+For malware incidents, the containment steps include:
+
+- Isolate affected systems from the network.
+- Revoke sessions of logged-in accounts on these systems.
+- Block communication with potential command-and-control servers.
+
+### Eradication
+
+To eradicate malware, follow these steps:
+
+- Shut down services associated with the malicious process.
+- Remove the malicious binary from affected systems.
+- Run a complete EDR scan to ensure removal.
+- Reimage affected systems if necessary.
+- Reset credentials for affected accounts.
+
+### Recovery
+
+For recovery after malware eradication:
+
+- Enable MFA on affected accounts and enforce strong password policies.
+- Audit the malware's activities and revert any unauthorized changes.
+- Restore affected machines to their last known good configuration and resume services.
+
+Note that the phases of containment, eradication, and recovery often overlap and can be grouped together in the IR process.
+
+- To recover systems affected by an incident, which configuration should we bring them back to?
+<Collapse title="View Answer.">
+  <Success>last known good configuration</Success>
+</Collapse>
+
+### IR Process and Playbooks: Post-Incident Activity
+
+Post-incident activity is the final stage of the Incident Response (IR) process, focusing on understanding and improving from the incident. The steps taken in this phase depend on the specific incident and the gaps identified during the investigation.
+
+### Key Questions Addressed
+
+During post-incident activity, the following questions are explored:
+
+1. **Why did the incident occur?** This often involves using the "5 Whys" method to reach the root cause.
+2. **What gaps were identified?** Understanding what could have been improved to prevent the incident.
+3. **How can we enhance People, Processes, and Technology?** Finding ways to avoid similar incidents in the future.
+4. **What actions could have minimized the incident's impact?** Reflecting on preventative measures that could have been taken.
+
+### Subjectivity of Post-Incident Activity
+
+The approach to post-incident activities can vary significantly based on organizational dynamics, the type of incident, its impact, and the findings from the investigation. Therefore, specific steps for this phase are typically not included in playbooks. Instead, broad guidelines are outlined in the IR plan.
+
+### Guidelines Based on Severity
+
+The scope and guidelines for post-incident activities often depend on the severity and impact of the incident. Many or
+
+- What is the last stage of the IR process? 
+<Collapse title="View Answer.">
+  <Success>post-activity incident</Success>
+</Collapse>
+
+![Workflow Diagrams](/tryhackme/ir/post-inctivity.png)

@@ -1,0 +1,206 @@
+---
+title: SOC Fundamentals
+description: Learn about the SOC team and their processes.
+pubDate: 09 22 2024
+image: /tryhackme/dfirprocesslegalconsiderations/index.png
+categories:
+  - tryhackme
+tags:
+  - Cyber Security 101
+---
+
+## Source Links
+
+- [SOC Fundamentals Room](https://tryhackme.com/r/room/socfundamentals)
+- [TryHackMe Homepage](https://tryhackme.com/)
+
+# Introduction to SOC
+
+Technology has made our lives more efficient, but with this efficiency comes more responsibility. Modern-day fears have evolved from the exploitation of physical assets. The critical data, referred to as "secrets," are no longer stored in physical files. Organizations now carry vast amounts of confidential data within their networks and systems. Any unauthorized disruption, loss, or modification of this data can result in significant damage. Threat actors continually discover and exploit new vulnerabilities in these networks and systems, posing a major concern in cybersecurity. Traditional security practices may no longer suffice to prevent many of these threats. Therefore, dedicating an entire team to manage your organization’s security is crucial.
+
+A SOC (Security Operations Center) is a dedicated facility operated by a specialized security team. This team aims to continuously monitor an organization’s network and resources, identifying suspicious activity to prevent damage. They work 24 hours a day, seven days a week.
+
+This room will delve into some key concepts of SOC, one of the most important fields in defensive security.
+
+## Learning Objectives
+
+- Building a baseline for SOC (Security Operations Center)
+- Detection and response in SOC
+- The role of People, Processes, and Technology
+- Practical exercise
+
+# Purpose and Components of the SOC Team
+
+The main focus of the SOC team is to keep Detection and Response intact. The SOC team has some resources available in the form of security solutions that help them achieve this. These solutions integrate the whole company’s network and all the systems to monitor them from one centralized location. Continuous monitoring is required to detect and respond to any security incident.
+
+## Main Focus of SOC: Detect and Respond
+
+### Detection
+
+1. **Detect Vulnerabilities**: 
+   A vulnerability is a weakness that an attacker can exploit to carry out actions beyond their permission level. Vulnerabilities can be found in any device’s software (operating systems and programs), such as servers or computers. For instance, the SOC might discover that a set of MS Windows computers needs to be patched against a specific published vulnerability. Strictly speaking, vulnerabilities are not necessarily the SOC’s responsibility; however, unfixed vulnerabilities affect the security level of the entire company.
+
+2. **Detect Unauthorized Activity**: 
+   Consider the case where an attacker discovers the username and password of one of the employees and uses them to log in to the company system. It is crucial to detect this kind of unauthorized activity quickly before it causes any damage. Many clues, such as geographic location, can help in detection.
+
+3. **Detect Policy Violations**: 
+   A security policy is a set of rules and procedures created to help protect a company against security threats and ensure compliance. What is considered a violation can vary from company to company; examples include downloading pirated media files and sending confidential company files insecurely.
+
+4. **Detect Intrusions**: 
+   Intrusions refer to unauthorized access to systems and networks. One scenario could involve an attacker successfully exploiting a web application. Another might be a user visiting a malicious site and getting their computer infected.
+
+### Response
+
+- **Support with Incident Response**: 
+  Once an incident is detected, certain steps are taken to respond to it. This response includes minimizing its impact and performing a root cause analysis of the incident. The SOC team also assists the incident response team in carrying out these steps.
+![soc](/tryhackme/Cyber-Security-101/soc.png)
+### The Three Pillars of a SOC
+
+With all these pillars, a SOC team becomes mature and efficiently detects and responds to different incidents. The pillars are:
+
+![soc pillars](/tryhackme/Cyber-Security-101/soc-pillars.png)
+- **People**
+- **Process**
+- **Technology**
+
+People, Process, and Technology coexist in a SOC environment. A team of professional individuals working on state-of-the-art security tools within the framework of proper processes creates a mature SOC environment.
+
+In the upcoming tasks, we will discuss each of these pillars individually and examine their importance in the SOC.
+
+## People in the SOC
+
+Regardless of the evolution of automating the majority of security tasks, the People in a SOC will always be important. A security solution can generate numerous red flags in a SOC environment, creating significant noise.
+
+Imagine being part of a fire brigade team with centralized software where all the city’s fire alarms are integrated. Suppose you receive many fire notifications simultaneously for different locations. Upon arrival, your team discovers that most were triggered by excessive smoke from cooking. Ultimately, all efforts would be wasted in addressing non-issues.
+
+In a SOC, relying solely on security solutions without human intervention may lead to a focus on irrelevant problems. It is the People who help security solutions identify genuinely harmful activities and enable a prompt response.
+![people](/tryhackme/Cyber-Security-101/people.png)
+The People are known as the SOC team, which has the following roles and responsibilities:
+
+## The Hierarchy of the SOC Team
+
+1. **SOC Analyst (Level 1)**: 
+   - These analysts are the first responders to any detection. Anything detected by the security solution passes through them first. Level 1 Analysts perform basic alert triage to determine if a specific detection is harmful and report these detections through proper channels.
+
+2. **SOC Analyst (Level 2)**: 
+   - While Level 1 handles initial analysis, some detections may require deeper investigation. Level 2 Analysts assist in conducting thorough investigations and correlating data from multiple sources for proper analysis.
+
+3. **SOC Analyst (Level 3)**: 
+   - Level 3 Analysts are experienced professionals who proactively search for threat indicators and support incident response activities. Critical severity detections reported by Level 1 and Level 2 Analysts often require detailed responses, including containment, eradication, and recovery, where Level 3 analysts’ experience is invaluable.
+
+4. **Security Engineer**: 
+   - All analysts work with security solutions that require deployment and configuration. Security Engineers are responsible for deploying and configuring these security solutions to ensure their smooth operation.
+
+5. **Detection Engineer**: 
+   - Security rules are the logic built behind security solutions to detect harmful activities. Level 2 and Level 3 Analysts often create these rules, while the SOC team may also utilize the Detection Engineer role independently for this responsibility.
+
+6. **SOC Manager**: 
+   - The SOC Manager oversees the processes the SOC team follows and provides support. They also maintain contact with the organization’s CISO (Chief Information Security Officer) to keep them updated on the SOC team’s current security posture and efforts.
+
+**Note**: The roles in the SOC team can increase or decrease depending on the size and criticality of the organization.
+
+## Process in the SOC
+
+We discussed the roles and responsibilities of different individuals working in the SOC team. Each role has its own processes, as illustrated by the Level 1 SOC Analysts, who are the first responders responsible for alert triage and determining the harm level of alerts. Let’s discuss some important processes involved in a SOC.
+
+### Alert Triage
+![soc pillars](/tryhackme/Cyber-Security-101/questions.png)
+The alert triage is the foundation of the SOC team. The first response to any alert is to perform triage, which focuses on analyzing the specific alert to determine its severity and prioritize it. The alert triage process revolves around answering the 5 Ws. What are these 5 Ws?
+
+### The 5 Ws of SOC
+
+During the triage of an alert, the following questions need to be answered:
+
+- **Alert**: Malware detected on Host: GEORGE PC
+
+| 5 Ws     | Answers                                                                                                   |
+|----------|-----------------------------------------------------------------------------------------------------------|
+| What?    | A malicious file was detected on one of the hosts inside the organization’s network.                    |
+| When?    | The file was detected at 13:20 on June 5, 2024.                                                         |
+| Where?   | The file was detected in the directory of the host: "GEORGE PC".                                        |
+| Who?     | The file was detected for the user George.                                                               |
+| Why?     | After investigation, it was found that the file was downloaded from a pirated software-selling website. The user revealed they downloaded it to use the software for free. |
+
+## Reporting
+
+Detected harmful alerts need to be escalated to higher-level analysts for timely response and resolution. These alerts are escalated as tickets and assigned to the relevant personnel. The report should discuss all the 5 Ws, along with a thorough analysis, and should include screenshots as evidence of the activity.
+
+## Incident Response and Forensics
+
+Sometimes, reported detections indicate highly malicious activities that are critical. In these scenarios, high-level teams initiate an incident response. The incident response process is discussed in detail in the Incident Response room. Occasionally, a detailed forensics activity also needs to be performed. This forensic activity aims to determine the incident’s root cause by analyzing the artifacts from a system or network.
+
+## Technology in the SOC
+
+Having the right People and Processes in place is never enough without security solutions for detection and response. The Technology portion in the SOC pillars refers to the security solutions that efficiently minimize the SOC team's manual effort to detect and respond to threats.
+
+An organization’s network consists of many devices and applications. As a security team, individually detecting and responding to threats on each device or application would require significant effort and resources. Security solutions centralize all information from the devices or applications present in the network and automate the detection and response capabilities.
+
+Let's briefly understand some of these security solutions:
+
+### SIEM
+
+**Security Information and Event Management (SIEM)** is a popular tool used in almost every SOC environment. This tool collects logs from various network devices, known as log sources. Detection rules are configured in the SIEM solution, containing the logic to identify suspicious activity. The SIEM solution provides detections after correlating them with multiple log sources and alerts us if there’s a match with any of the rules. Modern SIEM solutions go beyond rule-based detection, offering user behavior analytics and threat intelligence capabilities, supported by machine learning algorithms to enhance detection.
+
+**Note**: The SIEM solution primarily provides detection capabilities in a SOC environment.
+
+### EDR
+
+**Endpoint Detection and Response (EDR)** provides the SOC team with detailed real-time and historical visibility of device activities. It operates at the endpoint level and can execute automated responses. EDR has extensive detection capabilities for endpoints, enabling in-depth investigation and quick responses with just a few clicks.
+
+### Firewall
+
+A **firewall** serves as a network security barrier, acting as a gatekeeper between internal networks and external ones (such as the Internet). It monitors incoming and outgoing network traffic, filtering unauthorized traffic. The firewall also deploys detection rules to identify and block suspicious traffic before it reaches the internal network.
+
+Several other security solutions play unique roles in a SOC environment, such as Antivirus, EPP, IDS/IPS, XDR, SOAR, and more. The decision on what technology to deploy in the SOC comes after careful consideration of the threat surface and the resources available within the organization.
+
+## Practical Exercise of SOC
+
+This practical exercise utilizes People, Processes, and Technology to provide a walkthrough of the role of a Level 1 Analyst in the SOC team.
+
+Click on the **View Site** button below to display the lab on the right side of the screen.
+
+## Scenario
+
+You are the Level 1 Analyst of your organization’s SOC team. You receive an alert indicating that port scanning activity has been observed on one of the hosts in the network. You have access to the SIEM solution, where you can view all the associated logs for this alert. Your task is to examine the logs individually and answer the questions related to the 5 Ws given below.
+
+**Note**: The vulnerability assessment team has notified the SOC team that they were running a port scan activity inside the network from the host: **10.0.0.8**.
+
+![soc pillars](/tryhackme/Cyber-Security-101/dashboard.png)
+Based on the above picture, we can answer some of the questions below. We will be working with an alert that has not been resolved. In the above picture, we can see an ACKNOWLEDGE button, which we can use to take ownership of the alert. After that, we can click on Investigate in the SIEM to begin the alert analysis.
+
+## Explanation of the SIEM Log Traffic Table
+
+The SIEM log traffic table provides a detailed view of network activity related to a specific alert. Here’s a breakdown of each column and what the data represents:
+
+| Column                | Description                                                                 |
+|-----------------------|-----------------------------------------------------------------------------|
+| **Time**              | The date and time when the log entry was recorded (e.g., June 12, 2024 17:24). |
+| **Log Type**          | The type of log entry, indicating that this is traffic data (e.g., Traffic).  |
+| **Source Range**      | The type of network (e.g., Private) from which the traffic originated.       |
+| **Source IP**         | The IP address of the device that generated the traffic (e.g., 10.0.0.8).    |
+| **Destination IP**    | The IP address of the device receiving the traffic (e.g., 10.0.0.3).          |
+| **Source Port**       | The port number used by the source device to send traffic (e.g., 56927).     |
+| **Destination Port**  | The port number on the destination device that received the traffic (e.g., 443). |
+| **Source Host Name**  | The name of the source device (e.g., NESSUS), which is often a tool used for scanning. |
+| **Destination Host Name** | The name of the destination device (e.g., JOE PC) that received the traffic. |
+
+## Insights from the Data
+
+1. **Port Scanning Activity**: The logs show multiple connections from the source IP (10.0.0.8) to the destination IP (10.0.0.3) on various ports, indicating a potential port scanning activity.
+After completing your analysis, click on the Complete button above to obtain your flag.
+
+## Conclusion
+This room helped us learn some exciting facts about the SOC team. We saw its responsibilities and the pillars, People, Process, and Technology, that mature any SOC environment. This room focused on understanding how People, Processes, and Technology play their roles in the day-to-day SOC use cases. Lastly, we got our hands on a practice lab and solved a real-world SOC alert as a level 1 Analyst
+
+## Summary
+The SOC Fundamentals room provided a comprehensive introduction to the essential components of a Security Operations Center. It emphasized the critical role that SOC teams play in safeguarding an organization’s digital assets. With the increasing sophistication of cyber threats, the necessity for a dedicated team to monitor, detect, and respond to security incidents has never been clearer.
+
+The discussion around the three pillars of a SOC—People, Processes, and Technology—was particularly insightful. Each pillar is interdependent and essential for creating a mature and effective SOC environment:
+
+- **People**: The SOC team is the backbone of the operation. Each member has specific roles that contribute to the overall security posture of the organization. The hierarchy from Level 1 to Level 3 Analysts, along with Engineers and Managers, highlights the collaborative effort required in threat detection and response.
+
+- **Processes**: The structured processes for alert triage, reporting, and incident response are crucial for efficiently handling security incidents. Understanding the 5 Ws during alert triage helps in prioritizing and addressing threats effectively.
+
+- **Technology**: The tools and solutions like SIEM, EDR, and firewalls play a vital role in automating detection and response. They enable the SOC team to focus on genuine threats rather than getting bogged down by noise.
+
+Overall, this room not only enhanced my understanding of SOC functions but also provided practical insights through a hands-on lab experience, simulating real-world scenarios as a Level 1 Analyst. This approach solidified the theoretical concepts learned and highlighted the importance of teamwork and structured processes in cybersecurity.

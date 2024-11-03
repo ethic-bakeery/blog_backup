@@ -1,0 +1,325 @@
+---
+title: Forensic Imaging
+description: Learn the basic concepts of forensic imaging.
+pubDate: 09 10 2024
+image: /forensic.png
+categories:
+  - Forensic 
+tags:
+  - Blue Team
+---
+
+import Collapse from "../../components/blog/collapse.astro";
+import Diff from "../../components/blog/diff.astro";
+import Error from "../../components/blog/error.astro";
+import Info from "../../components/blog/info.astro";
+import Kbd from "../../components/blog/kbd.astro";
+import Success from "../../components/blog/success.astro";
+import Warning from "../../components/blog/warning.astro";
+import TimeLine from "../../components/page/TimeLine.astro";
+import LinkCard from "../../components/page/LinkCard.astro";
+
+## Introduction
+
+In Digital Forensics, imaging involves creating an exact, bit-by-bit copy of digital storage media. This captures all data, including deleted and hidden files, while preserving the original data for thorough examination. The main goal is to create a verifiable copy for investigations and legal proceedings, ensuring the integrity of digital evidence.
+
+This process is essential for maintaining the chain of custody by documenting the handling of digital evidence, demonstrating that the data has been preserved and not tampered with, which is critical for legal transparency.
+
+## Learning Objectives
+
+- Understand the basics of the forensic imaging process.
+- Explore different environment settings for imaging.
+- Learn how to create a raw image from an attached device.
+- Perform an integrity check of an image.
+
+## Prerequisites
+
+- [Intro to Digital Forensics](https://tryhackme.com/r/room/introdigitalforensics)
+- [DFIR: An Introduction](https://tryhackme.com/r/room/introductoryroomdfirmodule)
+- [Linux Fundamentals 1](https://tryhackme.com/r/room/linuxfundamentalspart1)
+- [Legal Considerations in DFIR](https://tryhackme.com/r/room/dfirprocesslegalconsiderations)
+
+
+## Preparation
+
+To start imaging a disk, you need to find the drive you want to copy and prepare it for the process. This involves making a duplicate of the drive's data and checking that the copy is accurate. It’s crucial to do this in a way that keeps track of all actions taken.
+
+Different operating systems have different ways of handling files, so you need the right tools for each. In this case, we’ll be using Linux to create the copy of the drive.
+
+### Write-Blockers
+
+- Devices that prevent modifications to data on physical disks during analysis.
+- Ensure that data can be read without altering original evidence by intercepting write commands between the disk and the OS.
+
+### Audit Trail
+
+- A chronological record of actions and events within a system for accountability and security.
+- Documents each step for traceability, adaptable to legal or compliance requirements.
+- Actions can be recorded manually or automatically, helping to preserve evidence and track activities.
+
+If we are using **`bash`**, the **`history`** command can help us log our activity. It can be saved using a timestamp and preserved in a file. Below, we can observe a chart with some commands recommended to use during our session.
+
+| **Command**                               | **Description**                                                                                          |
+|-------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| **`set -o history`**                      | Enables command history in the shell, allowing it to record the commands you enter.                     |
+| **`shopt -s histappend`**                 | Ensures that the command history is appended to the history file instead of overwriting it when exiting. |
+| **`export HISTCONTROL=`**                 | Clears any settings that control which commands are saved in the history, ensuring all commands are recorded. |
+| **`export HISTIGNORE=`**                  | Clears any settings that ignore specific patterns of commands, so all commands are saved in the history. |
+| **`export HISTFILE=~/.bash_history`**     | Sets the file where the command history is saved.                                                        |
+| **`export HISTFILESIZE=-1`**              | Sets no limit on the number of lines stored in the history file.                                         |
+| **`export HISTSIZE=-1`**                  | Sets no limit on the number of commands retained in the shell history.                                   |
+| **`export HISTTIMEFORMAT="%F-%R "`**      | Formats timestamps in the history as "YYYY-MM-DD HH" for each command.                                  |
+
+Another good practice is to log all sessions. This could be achieved with bash internals, but other easy-to-use software can achieve the same, like [script](https://man7.org/linux/man-pages/man1/script.1.html), a UNIX tool present in several Linux distributions, or similar tools like [ttyrec](https://github.com/mjording/ttyrec).
+
+
+## Accessing the File System
+The method for accessing the file system is similar for all disks—whether they are physically or virtually attached to a Linux OS. After setting up your environment and logging your actions, you can use the df command to view the attached devices on the target machine.
+### Filesystem Information
+
+```bash
+user@tryhackme$ df
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/root       40581564 7240136  33325044  18% /
+devtmpfs          995480       0    995480   0% /dev
+tmpfs            1003808       0   1003808   0% /dev/shm
+tmpfs             200764    1148    199616   1% /run
+tmpfs               5120       0      5120   0% /run/lock
+tmpfs            1003808       0   1003808   0% /sys/fs/cgroup
+/dev/loop0         25600   25600         0 100% /snap/amazon-ssm-agent/7628
+/dev/loop1         25856   25856         0 100% /snap/amazon-ssm-agent/7993
+/dev/loop2        108032  108032         0 100% /snap/core/16574
+/dev/loop3        106752  106752         0 100% /snap/core/17200
+/dev/loop4         57088   57088         0 100% /snap/core18/2812
+/dev/loop5         57088   57088         0 100% /snap/core18/2829
+/dev/loop6         65536   65536         0 100% /snap/core20/2105
+/dev/loop7         65536   65536         0 100% /snap/core20/2318
+/dev/loop8         69632   69632         0 100% /snap/lxd/22526
+/dev/loop9         94080   94080         0 100% /snap/lxd/24061
+tmpfs             200760       0    200760   0% /run/user/1000
+tmpfs             200760       8    200752   1% /run/user/114
+tmpfs             200760       4    200756   1% /run/user/1001
+```
+Drives are attached as devices under the /dev directory. In the output above, the current disk used by the OS is listed under /dev/root. Our device is not mounted yet, and since it is a Virtual Disk attached to a loop interface, it will not appear using the command df. This is also common for physical disks when not directly attached.
+
+We can still list block devices using the lsblk command with the -a option to list all devices, as shown below.
+
+### Forensic Imaging
+
+```bash
+user@tryhackme$ sudo dc3dd if=/dev/loop10 of=example1.img log=imaging_loop10.txt
+
+dc3dd 7.2.646 started at 2024-06-28 22:58:59 +0000
+compiled options:
+command line: dc3dd if=/dev/loop10 of=example1.img log=imaging_loop10.txt
+device size: 2252800 sectors (probed),    1,153,433,600 bytes
+sector size: 512 bytes (probed)
+  1153433600 bytes ( 1.1 G ) copied ( 100% ),   13 s, 84 M/s                  
+
+input results for device `/dev/loop10':
+   2252800 sectors in
+   0 bad sectors replaced by zeros
+
+output results for file `example1.img':
+   2252800 sectors out
+
+dc3dd completed at 2024-06-28 22:59:12 +0000
+
+The output from the lsblk -a command shows several loop interfaces and their details. Notably, loop10 is initialized with 1.1 GB, which matches the disk size needed for creating images. It's important to ensure there's enough space on the destination disk, which is xvda (40 GB, mounted at /).
+
+To gather more information about the devices, you can use the losetup -l command to list the devices and their assigned paths, such as /dev/loop10.
+
+
+user@tryhackme$ sudo losetup -l /dev/loop10
+NAME        SIZELIMIT OFFSET AUTOCLEAR RO BACK-FILE                 DIO LOG-SEC
+/dev/loop10         0      0         0  0 /home/ubuntu/example1.img   0     512
+```
+
+It is possible to acquire further information like the UUID of the image using the blkid with the interface as an argument, as demonstrated in the following example.
+
+```bash
+user@tryhackme$ sudo blkid /dev/loop10
+/dev/loop10: UUID="1895de04-f9ee-4b8b-b49d-9ef55770073c" TYPE="ext4"
+```
+With the information above logged into our notes, we should proceed to create the disk's image. Note that if we were using a physical disk, we could also use commands like hparn to get information about the manufacturer, serial number, and other required data.
+
+##### What command can be used to list all block devices in Linux OS?
+
+<Collapse title="View Answer.">
+  <Success>lsblk</Success>
+</Collapse>
+
+##### Which bash command displays all commands executed in a session?
+
+<Collapse title="View Answer.">
+  <Success>History</Success>
+</Collapse>
+
+##### Creating a Forensic Image
+*Now that we have identified the device, we want to create an image. Let's go ahead and copy this disk to a raw image file for further inspection. This could also be done to another disk if needed, which is a common practice, but in this case, we will do it to a local file in our system with the .img extension to identify the file as an image*
+
+*As we recall from our previous task, there is a great variety of tools we can use to create images. We will use dc3dd in this example, an enhanced version of the UNIX command dd. Below, you can find a list of some common tools used to create images*
+
+--------------------------------------------------------------------------------------
+| Tool           | Description                                                          |
+|----------------|----------------------------------------------------------------------|
+| `dd`           | *Standard Unix utility for copying and converting files,used for raw disk images*.|
+| `dc3dd`        | *Enhanced version of `dd` with forensic features like hashing and logging*. |
+| `ddrescue`     | *Data recovery tool that copies data from damaged drives efficiently*.  |
+| `FTK Imager`   | *GUI-based tool for easy creation of forensic images with comprehensive features*. |
+| `Guymager`     | *GUI forensic imaging tool that supports multiple formats and detailed logging*. |
+| `EWF tools`    | *Tools for creating and managing Expert Witness Format (EWF) images in digital forensics*. |
+----------------------------------------------------------------------------------------------------------
+
+### To image a device with dc3dd:  
+- Use <span style={{ color: 'green' }}>if=/dev/loop10 </span> for the input device.
+- Use <span style={{ color: 'green' }}>of=example1.img </span> for the output file.
+- Include <span style={{ color: 'green' }}>log=imaging_loop10.txt </span> to save output logs.
+
+
+Below, we can observe the command output of dc3dd using the parameters mentioned.
+
+```bash
+user@tryhackme$ sudo dc3dd if=/dev/loop10 of=example1.img log=imaging_loop10.txt
+
+dc3dd 7.2.646 started at 2024-06-28 22:58:59 +0000
+compiled options:
+command line: dc3dd if=/dev/loop10 of=example1.img log=imaging_loop10.txt
+device size: 2252800 sectors (probed),    1,153,433,600 bytes
+sector size: 512 bytes (probed)
+  1153433600 bytes ( 1.1 G ) copied ( 100% ),   13 s, 84 M/s                  
+
+input results for device `/dev/loop10':
+   2252800 sectors in
+   0 bad sectors replaced by zeros
+
+output results for file `example1.img':
+   2252800 sectors out
+
+dc3dd completed at 2024-06-28 22:59:12 +0000
+```
+From the output above, we can confirm that the operation seemed to be successful and that we created a file of the same size, as shown below.
+
+```bash
+user@tryhackme$ ls -alh example1.img 
+-rw-r--r-- 1 root root 1.1G Jun 28 22:28 example1.img
+```
+## Integrity Checking
+Integrity checking in digital forensics imaging is vital to ensure that a forensic copy matches the original data. This is done using cryptographic hash functions like MD5, SHA-1, or SHA-256 to generate unique hash values for both the original and copied data. Comparing these hashes confirms that the evidence remains unaltered, which is essential for its reliability in legal contexts.
+
+Tools like dc3dd can automatically calculate and verify hashes during the imaging process, enhancing assurance. Regular integrity checks throughout the investigation help maintain data integrity and preserve the chain of custody
+
+```bash 
+user@tryhackme$ sudo lsblk -l
+loop0    7:0    0  26.7M  1 loop /snap/amazon-ssm-agent/5163
+loop1    7:1    0  24.9M  1 loop /snap/amazon-ssm-agent/7628
+loop2    7:2    0 105.4M  1 loop /snap/core/16574
+loop3    7:3    0 104.2M  1 loop /snap/core/17200
+loop4    7:4    0  55.7M  1 loop /snap/core18/2812
+loop5    7:5    0  55.7M  1 loop /snap/core18/2829
+loop6    7:6    0  63.9M  1 loop /snap/core20/2105
+loop7    7:7    0    64M  1 loop /snap/core20/2318
+loop8    7:8    0  67.9M  1 loop /snap/lxd/22526
+loop9    7:9    0  91.9M  1 loop /snap/lxd/24061
+loop10   7:10   0   1.1G  0 loop 
+loop11   7:11   0   1.1G  0 loop /mnt/example1
+xvda   202:0    0    40G  0 disk 
+xvda1  202:1    0    40G  0 part /
+```
+We can observe that the device is still listed in <span style={{ color: 'brown' }}>/dev/loop10</span>  Let's ensure our imaging process was successful. To do that, let's calculate the MD5 hash of the image we created, <span style={{ color: 'brown' }}>example1.img</span>, and let's do the same for the <span style={{ color: 'brown' }}>device/dev/loop10</span>. The results should match.
+
+```bash
+user@tryhackme$ sudo md5sum example1.img 
+483ca14c7524b8667974a922662b87e8  example1.img
+
+
+user@tryhackme$ sudo md5sum /dev/loop10
+483ca14c7524b8667974a922662b87e8  /dev/loop10
+```
+As shown above, the calculated hash indeed matches, passing the integrity check for this image we created. Thus, we can confirm that the imaging process has been successful through hashing.
+
+##### What is the MD5 hash of the image "exercise.img" located in /home/analyst/?
+start the machine in home, -> sudo md5sum exercise.img 
+<Collapse title="View Answer.">
+  <Success>1f1da616156f73083521478c334841bb</Success>
+</Collapse>
+
+## Other Types of Imaging
+It is worth noting that other types of imaging procedures can be performed, not only on disk devices. These can include:
+
+| Type            | Description                                                           |
+|------------------|-----------------------------------------------------------------------|
+| Remote Imaging    | Involves creating an image over the network, allowing data acquisition without physical access to the device. |
+| USB Images        | Creates an image of a USB drive's contents.                          |
+| Docker Images     | Creates a snapshot of a Docker container's filesystem and configuration. |
+
+
+Once we have an image, we can also verify that the image is working and can be used to inspect it; for that, we could mount the image to verify the process is complete correctly. Let's go ahead and mount the image we created, example1.img.
+
+As we observed before, our disk assigned to the loop interface loop10 is not mounted as the command df displays.
+
+```bash
+user@tryhackme$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root        39G  7.9G   31G  21% /
+devtmpfs        973M     0  973M   0% /dev
+tmpfs           981M     0  981M   0% /dev/shm
+tmpfs           197M  1.2M  195M   1% /run
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           981M     0  981M   0% /sys/fs/cgroup
+/dev/loop0       27M   27M     0 100% /snap/amazon-ssm-agent/5163
+/dev/loop1       25M   25M     0 100% /snap/amazon-ssm-agent/7628
+/dev/loop2      106M  106M     0 100% /snap/core/16574
+/dev/loop3      105M  105M     0 100% /snap/core/17200
+/dev/loop4       56M   56M     0 100% /snap/core18/2812
+/dev/loop5       56M   56M     0 100% /snap/core18/2829
+/dev/loop6       64M   64M     0 100% /snap/core20/2105
+/dev/loop7       64M   64M     0 100% /snap/core20/2318
+/dev/loop8       68M   68M     0 100% /snap/lxd/22526
+/dev/loop9       92M   92M     0 100% /snap/lxd/24061
+tmpfs           197M     0  197M   0% /run/user/1000
+tmpfs           197M  8.0K  197M   1% /run/user/114
+tmpfs           197M  4.0K  197M   1% /run/user/1001
+```
+Let's mount it using the mount command
+    - First, create a mount point directory /mnt/example1  with the command sudo mkdir -p /mnt/example1
+    - Then, use the command sudo mount -o loop example1.img /mnt/example1 to mount the image
+    - After that, we can verify by exploring the mount point we created using the ls command.
+
+```bash
+ls /home/practical/
+flag.txt  lost+found  testpractical01  testpractical02  testpractical03  testpractical04  testpractical05
+```
+
+##### Mount the image "exercise.img" located in the analyst home directory folder. What is the content of the file "flag.txt" located within exercise.img?
+!Mounting](/Frosti/public/main/mount.png)
+
+{/* <details>
+  <summary>View Answer</summary>
+  <Success>THM{mounttt-mounttt-me}</Success>
+</details> */}
+
+
+## Practical Exercise
+
+##### Create an image of the attached 1gb loop device. What is the MD5 hash of the image?
+![Practical](/main/practical.png)
+
+<Collapse title="View Answer.">
+  <Success>1fab86e499934dda789c9c4aaf27101d</Success>
+</Collapse>
+
+##### Mount the image from the 1 GB loop device. What is the content of the file "flag.txt"?
+in image above
+{/* <Collapse title="View Answer.">
+  <Success><p>THM{well-done-imaginggggggg}</p></Success>
+</Collapse> */}
+
+## Conclusion
+
+In this room, we learned the basics of forensic imaging, defining the main concepts and performing tasks that will put us in practical scenarios where we performed imaging of devices, mount, and check their integrity through hashing algorithms.
+You can learn more about forensic imaging or more about Linux forensics in the rooms below.
+
+- [Linux Forensics](https://tryhackme.com/r/room/linuxforensics)
+- [Linux Fundamentals 2](https://tryhackme.com/r/room/linuxfundamentalspart2)
+- [Linux Logs Investigation](https://tryhackme.com/r/room/linuxlogsinvestigations)

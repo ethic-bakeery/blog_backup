@@ -1,0 +1,83 @@
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseCard from "../components/BaseCard.astro";
+import Collapse from "../components/blog/collapse.astro";
+import LinkCard from "../components/page/LinkCard.astro";
+
+<BaseLayout title="Home">
+  <BaseCard title="Welcome to CyberTech Blog" image="/index.webp">
+    <div className="flex">
+      <div className="p-6">
+            <div class="flex">
+              <div class="p-6">
+          # Hi there! 👋
+
+          Welcome to Bakeery's Blog! 🎉
+
+          This is where I share insights, tips, and updates on technology, cybersecurity, and more. Dive in to explore a blend of engaging content and expert knowledge crafted just for you.
+      </div>
+    </div>
+        - **Malware Analysis**
+        - **Incident Response**
+        - **Vulnerability Assessments**
+        - **Pentesting Techniques**
+        - **Security Tools & Frameworks**
+
+        Stay updated on the latest trends, tools, and techniques in the field to sharpen your skills and stay ahead in the cybersecurity game.
+      </div>
+    </div>
+  </BaseCard>
+
+  <BaseCard title="Featured Content">
+    ## 🛡️ Latest Cybersecurity Walkthroughs and Guides
+
+    <div className="flex flex-col space-y-4">
+      <LinkCard title="Malicious Document Analysis Walkthrough" description="Step-by-step guide to analyzing malicious documents and extracting hidden threats." link="/posts/malicious-document-analysis" />
+      <LinkCard title="Setting Up a Secure Pentesting Lab" description="A comprehensive guide to building a safe and secure environment for pentesting and ethical hacking." link="/posts/pentesting-lab-setup" />
+      <LinkCard title="Exploit Development 101" description="Learn the basics of exploit development, from vulnerability research to crafting working exploits." link="/posts/exploit-development-101" />
+    </div>
+  </BaseCard>
+
+  <BaseCard title="About CyberTech Blog">
+    ## 💻 What Is CyberTech Blog?
+
+    CyberTech Blog is dedicated to delivering high-quality, detailed content on cybersecurity, ethical hacking, and technology. Whether you're a seasoned professional or just starting in the field, you'll find valuable resources here.
+
+    ### 🛠️ Key Topics Covered:
+    - **Cybersecurity Walkthroughs**: Detailed analysis and step-by-step guides on different attack vectors and defenses.
+    - **Technology Insights**: Discussions on emerging trends and technologies impacting the industry.
+    - **Tool Reviews**: Explore various security tools and frameworks, with practical examples and use cases.
+    - **Learning Resources**: Tips and resources to help you enhance your cybersecurity skills and knowledge.
+
+    Stay tuned for more exciting content coming your way!
+  </BaseCard>
+
+  <BaseCard title="Explore More">
+    ## 📚 Dive Deeper into Cybersecurity
+
+    <div className="grid grid-cols-2 gap-6">
+      <Collapse title="🔒 Vulnerability Research" content="Explore articles and resources on identifying, assessing, and mitigating vulnerabilities in different systems." />
+      <Collapse title="💼 Incident Response" content="Step-by-step incident response strategies to help you recover quickly from security breaches." />
+      <Collapse title="🔍 Threat Intelligence" content="Understand how to gather and analyze threat intelligence to stay ahead of malicious actors." />
+      <Collapse title="🚀 Ethical Hacking" content="Learn practical ethical hacking techniques, from network reconnaissance to privilege escalation." />
+    </div>
+  </BaseCard>
+
+  <BaseCard title="Tech Trends & Updates">
+    ## 📢 Stay Informed on the Latest Technology Trends
+
+    <div className="p-4">
+      Stay up to date with the latest trends in technology, including **AI**, **blockchain**, and **cloud security**. The world of cybersecurity is always evolving, and so should your knowledge.
+    </div>
+  </BaseCard>
+
+  <BaseCard title="Future Roadmap">
+    ## 🚀 What's Next for CyberTech Blog?
+
+    We're planning to cover more advanced topics and interactive features:
+    - **Headless CMS Integration** for seamless content management.
+    - **Interactive Code Challenges** to test your cybersecurity skills.
+    - **Live Webinars and Workshops** on the latest industry techniques.
+
+    Stay tuned for exciting developments!
+  </BaseCard>
+</BaseLayout>

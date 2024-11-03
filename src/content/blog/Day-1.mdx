@@ -1,0 +1,132 @@
+---
+title: Day 1 - Introduction to Packet Tracer
+description: Overview of Cisco Packet Tracer and setting up a basic DHCP example
+pubDate: 09 20 2024
+image: /image/What-is-Cisco-Packet-Tracer.jpeg
+categories:
+  - Networking
+  - Cisco
+  - Labs
+tags:
+  - Packet Tracer
+  - Networking
+  - Lab Setup
+---
+
+import Collapse from "../../components/blog/collapse.astro";
+import Diff from "../../components/blog/diff.astro";
+import Error from "../../components/blog/error.astro";
+import Info from "../../components/blog/info.astro";
+import Kbd from "../../components/blog/kbd.astro";
+import Success from "../../components/blog/success.astro";
+import Warning from "../../components/blog/warning.astro";
+import TimeLine from "../../components/page/TimeLine.astro";
+import LinkCard from "../../components/page/LinkCard.astro";
+
+## Introduction to Cisco Packet Tracer
+
+Cisco Packet Tracer is a powerful network simulation tool used for building, configuring, and troubleshooting network topologies. This tool allows you to visualize networking concepts in a hands-on manner.
+
+## Overview
+
+In this lab, we will introduce the following objectives:
+
+- Understanding the Packet Tracer interface.
+- Learning about commonly used devices in Packet Tracer.
+- Setting up a basic DHCP (Dynamic Host Configuration Protocol) example.
+
+<Info>
+  In Day 1, we cover the basics of Cisco Packet Tracer, including its interface and key features.
+</Info>
+
+Below is a detailed table explaining the different types of cables used in Packet Tracer:
+
+| **Cable Name**         | **Length**       | **Bandwidth** |  **Application**                                  
+|------------------------|------------------|---------------|-------------------------------------------------|
+| **Copper Straight-Through** | Up to 100 meters | 100 Mbps to 1 Gbps | Used for connecting devices to switches or routers (e.g., PC to Switch, Router to Switch). |
+| **Copper Crossover**   | Up to 100 meters | 100 Mbps to 1 Gbps | Used to connect similar devices (e.g., Switch to Switch, PC to PC, Router to Router). | 
+| **Fiber Optic**        | Up to 100 km     | 1 Gbps to 100 Gbps | Used for long-distance, high-bandwidth connections (e.g., between data centers, switches in different locations). | 
+| **Serial Cable**       | Variable         | 1.5 Mbps to 45 Mbps | Used for WAN connections between routers. | Typically used in older WAN technologies like Frame Relay. |
+| **Coaxial Cable**      | Up to 500 meters | 10 Mbps        | Used in older Ethernet (10BASE2, 10BASE5) configurations and some broadband applications. | 
+| **Console Cable**      | NA               | NA            | Used for device configuration, typically connects to a router or switch's console port for CLI access. | 
+| **Fiber Optic Multimode** | Up to 2 km      | 1 Gbps to 10 Gbps | Used for shorter distances with high bandwidth (e.g., within a building or campus).|
+| **Fiber Optic Single-mode** | Up to 100 km   | 10 Gbps to 100 Gbps | Used for long-distance communication with minimal loss. |
+| **Ethernet Cable**     | 1 to 100 meters  | 10 Mbps to 10 Gbps | Used for general networking purposes in homes, offices, and data centers (e.g., PC to Switch, Switch to Router). |
+| **USB Cable**          | Variable         | Up to 480 Mbps | Used to connect external devices such as USB storage, printers, and out-of-band router/switch management. |
+
+## Overview of Interfaces Used in Packet Tracer
+
+In Cisco Packet Tracer, different types of interfaces are used to connect devices. Each interface type has specific characteristics such as bandwidth, port type, and application. Understanding these interfaces helps in configuring networks correctly.
+
+Below is a detailed table explaining the different types of interfaces used in Packet Tracer:
+
+| **Interface Name**      | **Port Type**         | **Bandwidth**    | **Application**                                     |
+|-------------------------|-----------------------|------------------|----------------------------------------------------|
+| **Fast Ethernet (Fa0/1)** | RJ-45 (Copper)        | 100 Mbps         | Standard Ethernet for LAN connections between devices such as switches, routers, and PCs. |
+| **Gigabit Ethernet (Gi0/1)** | RJ-45 (Copper)        | 1 Gbps           | High-speed Ethernet for large LAN or small WAN connections. |
+| **Serial (S0/0/0)**      | Serial                | 1.5 Mbps to 45 Mbps | WAN connectivity, typically used for point-to-point links between routers. |
+| **Fiber (F0/1)**         | Fiber Optic           | 1 Gbps to 100 Gbps | High-speed data transmission over long distances between switches or routers. |
+| **VLAN Interface**       | Virtual               | Depends on underlying physical connection | Logical interface for Virtual LANs (VLANs), used to segment network traffic. |
+| **Console (CON)**        | RJ-45 (Console Port)  | NA               | Provides device management access for CLI configuration. |
+| **Auxiliary (AUX)**      | RJ-45 (Aux Port)      | NA               | Used for remote access over a modem connection to manage routers or switches. |
+| **Wireless (Wi-Fi)**     | Wireless Radio        | Varies (54 Mbps to 1 Gbps) | Provides wireless network connectivity between access points and wireless devices like PCs or laptops. |
+| **Loopback Interface**   | Virtual               | NA               | Used for testing and management purposes; often used as a static IP on routers. |
+| **USB Interface**        | USB                   | Up to 480 Mbps   | Connects external devices for data transfer, out-of-band management, or firmware upgrades. |
+
+## Main Features of Packet Tracer
+
+Packet Tracer offers several features for beginners and professionals alike:
+
+- **Simulation of Networking Concepts**: Create a variety of network configurations to simulate real-world scenarios.
+- **Interactive Interface**: The drag-and-drop interface allows easy addition and connection of devices.
+- **Device Support**: Includes various Cisco devices like routers, switches, and access points for practice.
+- **Real-Time and Simulation Modes**: Run your network in real-time or switch to simulation mode to observe data packets.
+- **Support for Multiple Protocols**: Learn about different networking technologies, including DHCP, OSPF, and RIP.
+- **Learning Resources**: Built-in tutorials and labs help you learn networking concepts effectively.
+
+## Commonly Used Devices
+
+You will frequently work with the following devices in Packet Tracer:
+
+- **Routers**: Connect different networks and direct data packets (e.g., Cisco 7200, 1941).
+- **Switches**: Connect devices within a single network (e.g., Cisco 2960, 3560).
+- **End Devices**: PCs, laptops, and servers that send and receive data.
+- **Access Points**: Enable wireless connectivity.
+
+## Setting Up a Basic DHCP Example
+
+**Steps**:
+
+1. **Open Packet Tracer**: Launch the application and create a new project.
+2. **Add Devices**: Drag a router, a switch, and two PCs onto the workspace.
+3. **Connect Devices**:
+   - Connect the router to the switch using a straight-through cable.
+   - Connect each PC to the switch using straight-through cables.
+4. **Configure the Router**:
+   - Click on the router and select the CLI tab.
+   - Enter the following commands to enable DHCP:
+     ```
+     enable
+     configure terminal
+     ip dhcp pool MYPOOL
+     network 192.168.1.0 255.255.255.0
+     default-router 192.168.1.1
+     ```
+5. **Configure the PCs**:
+   - Click on each PC, go to the Desktop tab, and select IP Configuration. Choose "DHCP" to obtain an IP address automatically.
+6. **Test the Configuration**: Use the command prompt in the PCs to ping each other and verify the DHCP configuration.
+
+## Images
+
+![Packet Tracer Interface](/Day-1.PNG)
+
+
+## Conclusion
+
+Today, you learned the basics of Cisco Packet Tracer, its main features, and how to set up a simple DHCP example. Understanding these fundamentals will help you as you progress through the rest of the labs.
+
+Feel free to explore Packet Tracer further and experiment with different configurations!
+{/* 
+[Watch the Day 1 Video](your-video-link-here)  Day-1.PNG
+
+[Packet Tracer Lab Configuration File](your-lab-configuration-link-here) */}

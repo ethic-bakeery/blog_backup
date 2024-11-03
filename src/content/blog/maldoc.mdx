@@ -1,0 +1,198 @@
+---
+title: "Malicious Document Analysis Walkthrough"
+description: "This walkthrough guides you through the analysis of malicious documents using various tools and techniques."
+pubDate: "Oct 05 2024"
+image: "/Banner.png"
+categories:
+  - tech
+tags:
+  - Malware
+badge: Pin
+---
+
+import Collapse from "../../components/blog/collapse.astro";
+import Diff from "../../components/blog/diff.astro";
+import Error from "../../components/blog/error.astro";
+import Info from "../../components/blog/info.astro";
+import Kbd from "../../components/blog/kbd.astro";
+import Success from "../../components/blog/success.astro";
+import Warning from "../../components/blog/warning.astro";
+import TimeLine from "../../components/page/TimeLine.astro";
+import LinkCard from "../../components/page/LinkCard.astro";
+
+
+## Course Files
+
+[**Source --> letsdefend.io**](https://app.letsdefend.io/training/lesson_detail/analysis-with-sandboxes)
+
+Here are the course files for the analysis:
+
+[**PO-465514-180820.doc.zip**](https://letsdefend-images.s3.us-east-2.amazonaws.com/Courses/MaliciousDocumentAnalysis-Malware-Samples/PO-465514-180820.doc.zip)
+
+[**Siparis_17.xls.zip**](https://letsdefend-images.s3.us-east-2.amazonaws.com/Courses/MaliciousDocumentAnalysis-Malware-Samples/Siparis_17.xls.zip)
+
+[**baddoc.zip**](https://letsdefend-images.s3.us-east-2.amazonaws.com/Courses/MaliciousDocumentAnalysis-Malware-Samples/baddoc.zip)
+
+**Password**: infected
+
+<Warning>⚠️ **Warning:** Do not analyze malicious files on your personal or primary machine! Always use a secure, isolated environment like a virtual machine (VM) or a dedicated analysis system to avoid compromising your data and device. Malicious documents can contain dangerous payloads that may harm your system. Stay safe!</Warning>
+
+Download the files and unzip them.
+
+
+## Linux Command to Extract Files
+Install p7zip (if it's not already installed):
+
+```bash
+sudo apt-get install p7zip-full
+```
+```bash
+7z x PO-465514-180820.doc.zip
+```
+
+## Question 1.
+ What is the MD5 value of the "/root/Desktop/QuestionFiles/PO-465514-180820.doc" file?
+
+Using Kali Linux, the MD5 value can be obtained by running:
+
+```bash
+md5sum PO-465514-180820.doc
+```
+
+<Collapse title="View Answer.">
+  <Success>d7e6921bfd008f707ba52dee374ff3db</Success>
+</Collapse>
+
+## Question 2. 
+What is the file type of /home/analyst/PO-465514-180820.doc?
+By looking at the file extension, we know it's a .doc file. You can also verify the file type by running:
+
+```bash
+file PO-465514-180820.doc
+```
+<Collapse title="View Answer.">
+  <Success>doc</Success>
+</Collapse>
+
+
+## Question 3. 
+Does the file /root/Desktop/QuestionFiles/PO-465514-180820.doc contain a VBA macro?
+To check for VBA macros, install oletools and run olevba:
+<Info> OLE VBA (olevba) is a tool for analyzing Microsoft Office documents, specifically for extracting and analyzing embedded VBA macros. It helps identify potentially malicious code by performing static analysis and detecting suspicious patterns. Commonly used in malware analysis and digital forensics, it supports various Office formats and outputs results in a human-readable format, making it essential for cybersecurity professionals </Info>
+
+```bash
+sudo -H pip install -U oletools
+olevba PO-465514-180820.doc
+```
+If the file contains a macro, you will see macro code details. If not, you'll get a message like this:
+> (empty macro)
+> No suspicious keywords or IOC found.
+
+<Collapse title="View Answer.">
+  <Success>Yes, the file contains a VBA macro</Success>
+</Collapse>
+
+
+## Question 4. 
+What is the macro keyword that triggers the malicious activity in /root/Desktop/QuestionFiles/PO-465514-180820.doc?
+Run the following to analyze the macros:
+
+```bash
+olevba PO-465514-180820.doc
+```
+![File Contains Micro](/main/microKey.PNG)
+The macro keyword responsible for the malicious activity is often Document_Open.
+
+<Collapse title="View Answer.">
+  <Success>Document_Open</Success>
+</Collapse>
+
+## Question 5. 
+Who is the author of the file /root/Desktop/QuestionFiles/PO-465514-180820.doc?
+To find the document’s metadata, including the author, use:
+
+```bash
+file PO-465514-180820.doc
+```
+
+<Collapse title="sample output">
+ PO-465514-180820.doc: Composite Document File V2 Document, Little Endian, Os: Windows, Version 6.2, Code page: 1252, Title: Ipsum., Author: Alexandre Riviere, Template: Normal.dotm, Revision Number: 1, Name of Creating Application: Microsoft Office Word, Create Time/Date: Tue Aug 18 09:19:00 2020, Last Saved Time/Date: Tue Aug 18 09:19:00 2020, Number of Pages: 1, Number of Words: 4, Number of Characters: 24, Security: 0
+</Collapse>
+The output should include details like the title, author, and other metadata. In this case, the author is Alexandre Riviere.
+
+<Collapse title="View Answer.">
+<Success>Alexandre Riviere</Success>
+</Collapse>
+
+## Question 6.
+What is the last saved time of the file /root/Desktop/QuestionFiles/PO-465514-180820.doc?
+To get detailed metadata, including the last saved time, use ExifTool:
+<Info>ExifTool is a versatile command-line application for reading, writing, and editing metadata in various file formats, particularly images. It supports numerous metadata standards like EXIF, IPTC, and XMP. Key features include batch processing, detailed metadata output, and wide format support. It's widely used by photographers and digital forensics experts for comprehensive metadata management.</Info>
+
+```bash
+exiftool PO-465514-180820.doc
+```
+![ExifTool](/main/lastmodified_date.PNG)
+
+<Collapse title="View Answer.">
+<Success>2020-08-18 08:19:00</Success>
+</Collapse>
+
+## Question 7.
+From which domain is the file Siparis_17.xls trying to download content?
+To analyze the macros in the Excel file, run:
+
+```bash
+olevba Siparis_17.xls
+```
+![ExifTool](/main/domains.PNG)
+The domain from which the file attempts to download content should be revealed in the output.
+<Collapse title="View Answer.">
+<Success>hocoso.mobi</Success>
+</Collapse>
+
+## Question 8. 
+How many IOCs are in the file Siparis_17.xls according to the Olevba tool?
+In the Olevba analysis, look for the section labeled Indicators of Compromise (IOCs).
+
+<Collapse title="View Answer.">
+<Success>2</Success>
+</Collapse>
+
+## Question 9. 
+What is the domain ending with .kz that the file PO-465514-180820.doc is trying to access?
+To determine which domain the file is trying to access, upload it to Hybrid-Analysis. After generating a report, navigate to the Relations section to view the DNS requests made.
+![ExifTool](/main/hybrid.PNG)
+<Collapse title="View Answer.">
+<Success>www[.]msbc.kz</Success>
+</Collapse>
+
+## Question 10.
+Which Windows tool is used to make connection requests in the file PO-465514-180820.doc?
+Using Hybrid-Analysis, you can observe which system tools are involved in making external connection requests. In this case, the tool used is:
+
+<Collapse title="View Answer.">
+<Success>powershell.exe</Success>
+</Collapse>
+
+## Question 11. 
+How many DNS addresses does the file PO-465514-180820.doc contact?
+Check the Hybrid-Analysis report for DNS requests made by the file. In this case, it made requests to:
+
+<Collapse title="View Answer.">
+<Success>5 addresses</Success>
+</Collapse>
+
+## Question 12. 
+What name does the Siparis_17.xls malware document use when saving the downloaded file to the device?
+Run olevba on the Excel file again and look for the specific name the malware uses when saving the file:
+
+```bash
+olevba Siparis_17.xls
+```
+<Collapse title="View Answer.">
+<Success>6LeGwKmrm.jar</Success>
+</Collapse>
+
+<Info>Final Thoughts: This walkthrough demonstrated how to analyze potentially malicious Microsoft Office documents using tools like olevba and ExifTool. These tools help uncover the hidden macros and metadata, revealing the malicious intent of the files..</Info>
+
